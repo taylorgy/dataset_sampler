@@ -53,12 +53,12 @@ foreach ($f in $selectedFiles) {
     $bn = [System.IO.Path]::GetFileNameWithoutExtension($f.Name)
     $baseNames[$bn] = $true
 }
-Write-Host "样本数量: $($baseNames.Count)组"
 
 if ($baseNames.Count -eq 0) {
     Write-Host "错误: 子集目录中没有文件 - $subsetAbs" -ForegroundColor Red
     exit 1
 }
+Write-Host "样本数量: $($baseNames.Count)"
 
 # Step 2: 建立 RawsetRoot 的文件索引（basename → 文件列表）
 $sourceIndex = @{}
@@ -108,7 +108,7 @@ foreach ($bn in $baseNames.Keys) {
 
 Write-Host "`n========== 完成 =========="
 Write-Host "子集路径: $subsetAbs"
-Write-Host "子集统计: $($baseNames.Count)组 / $($foundCount)文件"
+Write-Host "子集统计: $($baseNames.Count) 组 / $($foundCount) 文件"
 if ($failedCount -gt 0) {
     Write-Host "异常: $failedCount" -ForegroundColor Red
 }

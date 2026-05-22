@@ -3,11 +3,11 @@
     从数据集子文件夹或根目录中均匀/随机抽样
 
 .DESCRIPTION
-    从 RawsetRoot\RawsetPath（或 RawsetRoot 根目录）中抽样 FileCount 个文件，
-    复制到 SubsetRoot\RawsetPath（或 SubsetRoot 根目录）下。自动保留相对路径结构。
+    从 RawsetRoot\SourcePath（或 RawsetRoot 根目录）中抽样 FileCount 个文件，
+    复制到 SubsetRoot\SourcePath（或 SubsetRoot 根目录）下。自动保留相对路径结构。
 
     支持均匀等距抽样（默认）和随机抽样（-Random）。
-    若文件直接存放在 RawsetRoot 根目录，可省略 -RawsetPath。
+    若文件直接存放在 RawsetRoot 根目录，可省略 -SourcePath。
 
     此脚本不修改源数据集，只复制文件到子集目录。
 
@@ -30,7 +30,7 @@
     启用随机抽样。不指定时使用均匀等距抽样
 
 .EXAMPLE
-    .\Select-DatasetSample.ps1 -RawsetRoot "datasets\fsd" -RawsetPath "left\rgb" -SubsetRoot "subset" -FileCount 200
+    .\Select-DatasetSample.ps1 -RawsetRoot "datasets\fsd" -SourcePath "left\rgb" -SubsetRoot "subset" -FileCount 200
 
 .EXAMPLE
     .\Select-DatasetSample.ps1 -RawsetRoot "datasets\flat" -SubsetRoot "subset" -FileCount 50
@@ -72,12 +72,12 @@ if (-not (Test-Path -Path $sourceDir)) {
 Write-Host "采样路径: $sourceDir"
 $allFiles = Get-ChildItem -Path $sourceDir -Filter $Filter -File
 $totalFiles = $allFiles.Count
-Write-Host "文件总数: $totalFiles"
 
 if ($totalFiles -eq 0) {
     Write-Error "源路径中没有找到匹配的文件。筛选条件: $Filter"
     exit 1
 }
+Write-Host "文件总数: $totalFiles"
 
 if ($totalFiles -lt $FileCount) {
     Write-Host "采样数 $FileCount 大于源文件数 $totalFiles，退出" -ForegroundColor Red
@@ -129,7 +129,7 @@ foreach ($file in $selectedFiles) {
 
 Write-Host "`n========== 完成 =========="
 Write-Host "子集路径: $destDir"
-Write-Host "子集统计: $($selectedFiles.Count)组"
+Write-Host "样本数量: $($selectedFiles.Count)"
 if ($failCount -gt 0) {
     Write-Host "异常: $failCount" -ForegroundColor Red
 }

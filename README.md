@@ -2,20 +2,19 @@
 
 本项目是一套 PowerShell 脚本工具集，用以快速从大规模构化数据集中抽取子集。
 
-## 数据集布局说明
+## ️ 数据集文件夹采样
 
-本工具集主要针对**多模态数据集**的特殊布局设计。在典型的多模态数据集中，数据通常按照以下方式组织：
+针对典型的“多模态数据集”，支持“快速自动化处理”和“精细化人工筛选”两种模式。
 
-- **按文件类型分目录**
+### 数据集布局
 
+在典型的多模态数据集中，数据通常按照以下方式组织：
+
+- **按文件类型分目录**  
     不同类型的文件（如RGB图像、深度图、雷达点云等）存放在不同的子目录中
-
-- **同名文件关联**
-    
+- **同名文件关联**  
     同一场景或同一时间点的不同模态数据使用相同的文件名（仅扩展名不同）
-
-- **层级目录结构**
-    
+- **层级目录结构**  
     可能包含多个层级的子目录来组织数据
 
 例如：
@@ -42,17 +41,13 @@ dataset_root/
 
 在这种布局中，同名文件（如`0001.jpg`、`0001.pfm`、`0001.bin`）表示同一组的不同模态数据。
 
-## ️ 快速开始
-
-适用于已经解压的数据集，适用“快速自动化处理”和“精细化人工筛选”两种模式：
-
 ### 模式一：一键全自动采样（推荐）
 
 `New-DatasetSample.ps1`
 
 一键完成从路径发现、文件抽样到多模态数据补全的全过程。
 
-```powershell
+```pwsh
 # 从 dataset_root 中随机抽取 200 组样本到 subset 目录
 .\New-DatasetSample.ps1 -RawsetRoot "dataset_root" -SubsetRoot "subset" -FileCount 200 -Random
 ```
@@ -74,7 +69,7 @@ dataset_root/
 
 在指定目录中抽样（均匀或随机），按照原有的相对路径结构复制到指定子集目录 `subset`。
 
-```powershell
+```pwsh
 # 从指定子目录中均匀抽取 150 个文件到子集目录 
 .\Select-DatasetSample.ps1 -RawsetRoot "dataset_root" -SourcePath "left\rgb" -SubsetRoot "subset" -FileCount 150
 ```
@@ -98,7 +93,7 @@ dataset_root/
 
 扫描子集目录中已有文件的文件名，然后在源数据集中寻找所有同名文件（所有子文件夹、所有拓展名），并将它们按原始目录结构复制到子集目录中。
 
-```powershell
+```pwsh
 # 根据你最终保留的文件名，从源数据集中补全其他目录（如 disparity, radar 等）的对应文件
 .\Complete-DatasetSample.ps1 -RawsetRoot "dataset_root" -SubsetRoot "subset"
 ```
@@ -109,7 +104,9 @@ dataset_root/
 | `-SubsetRoot` | ✓ | 子集输出根目录 |
 
 ## 常见问题与提示
+
 ### 路径格式
+
 建议使用 Windows 路径分隔符 反斜杠 `\`。  
 也支持正斜杠 `/`。
 
@@ -117,7 +114,7 @@ dataset_root/
     
 如果在 PowerShell 中运行脚本时提示"无法加载，因为在此系统上禁止运行脚本"，请以管理员身份运行 PowerShell 并执行以下命令开启权限：
 
-```powershell
+```pwsh
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 ### 路径结构保留
@@ -134,11 +131,12 @@ Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 ### 代码重构
 - Copy-FilesEvenly / FindAndCopy 替换为 Select-DatasetSample / Complete-DatasetSample
+- 新增 New-DatasetSample，自动完成采样
 - 重构参数体系：RawsetRoot / SourcePath / SubsetRoot
 - 新增随机采样模式
 - 支持平铺数据集
 - 统一输出格式，异常提示与统计
 
-### 初始版本。
+### 初始版本
 - Copy-FilesEvenly：基于文件总数的均匀抽样
 - FindAndCopy：基于文件名的多目录关联复制

@@ -49,7 +49,7 @@ $ErrorActionPreference = "Continue"
 
 $rawsetAbs = (Resolve-Path -Path $RawsetRoot -ErrorAction Stop).Path
 
-# ----- 自动发现 RawsetPath -----
+# ----- 自动发现 SourcePath -----
 function Find-FirstLeafDir {
     param([string]$Root)
     $dirs = Get-ChildItem -Path $Root -Directory
@@ -88,12 +88,12 @@ Write-Host "采样路径: $sourceDir"
 # ----- 抽样（逻辑同 Select-DatasetSample） -----
 $allFiles = Get-ChildItem -Path $sourceDir -File
 $totalFiles = $allFiles.Count
-Write-Host "文件总数: $totalFiles"
 
 if ($totalFiles -eq 0) {
     Write-Error "采样路径中没有文件: $sourceDir"
     exit 1
 }
+Write-Host "文件总数: $totalFiles"
 
 if ($totalFiles -lt $FileCount) {
     Write-Host "采样数 $FileCount 大于源文件数 $totalFiles，退出" -ForegroundColor Red
@@ -185,7 +185,7 @@ foreach ($bn in $baseNames.Keys) {
 $totalFilesInSubset = $FileCount + $copiedCount
 Write-Host "`n========== 完成 =========="
 Write-Host "子集路径: $subsetAbs"
-Write-Host "子集统计: $($baseNames.Count)组 / $($totalFilesInSubset)文件"
+Write-Host "子集统计: $($baseNames.Count) 组 / $($totalFilesInSubset) 文件"
 if ($failedCount -gt 0) {
     Write-Host "异常: $failedCount" -ForegroundColor Red
 }

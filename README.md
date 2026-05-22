@@ -103,6 +103,48 @@ dataset_root/
 | `-RawsetRoot` | ✓ | 源数据集根目录 |
 | `-SubsetRoot` | ✓ | 子集输出根目录 |
 
+## 数据集压缩包采样
+
+对于有些数据集，压缩包体积就非常大，先解压再采样对空间要求很大。因此可以先导出压缩包文件列表，了解数据集内容和结构，再决定后续处理方案。
+
+### 导出文件列表
+
+`Export-ArchiveFileList.ps1`
+
+扫描压缩包内部结构，生成详细的文件列表清单。  
+压缩包格式：`zip` 和 `tar`（`tar.gz`、`tar.bz2`等）  
+输入：压缩包文件路径，或含有压缩包的文件夹路径  
+输出：可指定生成三种格式的文件列表（默认生成 txt 和 html）  
+- `_filelist.txt`：纯文本路径列表，便于脚本阅读
+    - 若该文件存在，脚本会复用以生成其他格式，避免重复扫描
+- `_filelist.html`：可折叠交互式网页，便于用户阅读
+- `_filetree.txt`：字符画风格的树状结构，介于二者之间
+
+```pwsh
+# 扫描单个压缩包，生成默认的 txt 和 html 文件
+Export-ArchiveFileList -Path "D:\data\dataset.tar.gz"
+
+# 递归扫描文件夹下所有压缩包，仅生成 txt 格式
+Export-ArchiveFileList -Path "D:\archives" -Recurse -Txt
+
+# 指定输出目录，仅生成 html 文件
+Export-ArchiveFileList -Path "D:\data.zip" -OutputDir "D:\reports" -Html
+
+# 扫描当前目录（非递归），生成所有三种格式的文件
+Export-ArchiveFileShift -Tree
+```
+
+| 参数 | 默认 | 说明 |
+| :--- | :--- | :--- |
+| `-Path` | 当前工作目录 | 目标压缩文件路径或包含压缩文件的文件夹路径 |
+| `-Recurse` | 关闭 | 当 `-Path` 为文件夹时，递归扫描子文件夹中的压缩文件 |
+| `-OutputDir` | 压缩包所在目录 | 文件列表的输出目录 |
+| `-Txt`  | 未指定 `-Html` 时开启 | 仅生成 `_filelist.txt` |
+| `-Html` | 未指定 `-Txt ` 时开启 | 仅生成 `_filelist.html` |
+| `-Tree` | 关闭 | 生成 `_filetree.txt` |
+
+注：程序默认生成 txt 和 html 两种格式，只想生成其中一种时才需要指定 `-Txt` 或 `-Html`。
+
 ## 常见问题与提示
 
 ### 路径格式
@@ -125,9 +167,16 @@ Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 在执行补全操作时，如果目标目录中已经存在同名文件，脚本会自动跳过，不会重复复制或覆盖。
 
+### 压缩文件支持
+
+脚本目前仅支持 `zip` 和 `tar`（`tar.gz`、`tar.bz2`等）格式，因为PowerShell 原生支持 `tar` 和 `System.IO.Compression.ZipFile` 命令。其他格式需要额外安装依赖，因此暂时不支持。
+
 ---
 
 ## 版本历史
+
+### 数据集压缩包采样
+- Export-ArchiveFileList.ps1：导出压缩包文件列表
 
 ### 代码重构
 - Copy-FilesEvenly / FindAndCopy 替换为 Select-DatasetSample / Complete-DatasetSample
